@@ -3,6 +3,7 @@
 
 // Includes
 #include "chunk.h"
+#include "token.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +12,7 @@ extern "C" {
 // Declarations
 void disassembleChunk(Chunk *chunk);
 int disassembleInstruction(Chunk *chunk, int offset);
+void printToken(Token *token);
 
 #ifdef __cplusplus
 }

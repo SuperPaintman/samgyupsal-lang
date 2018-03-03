@@ -60,3 +60,8 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     return offset + 1;
   }
 }
+
+void printToken(Token *token) {
+  printf("#<Token %d '%*.*s'>\n", token->type, token->length, token->length,
+         token->start);
+}
