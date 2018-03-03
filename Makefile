@@ -13,7 +13,16 @@ HEADERS = $(shell find $(SRCDIR) -type f -name *.h)
 SOURCES = $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 
-CFLAGS := -Wall
+CFLAGS := \
+	-Wall \
+	-Werror \
+	-pedantic \
+	-Wempty-body \
+	-Wignored-qualifiers \
+	-Wmissing-field-initializers \
+	-Wsign-compare \
+	-Wtype-limits \
+	-Wuninitialized
 LIB :=
 INC :=
 

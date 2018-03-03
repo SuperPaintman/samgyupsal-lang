@@ -42,7 +42,7 @@ void initVM(VM *vm) { vm->sp = 0; }
 void freeVM(VM *vm) { initVM(vm); }
 
 void interpret(VM *vm, Chunk *chunk) {
-  int i = 0;
+  uint32_t i = 0;
   while (i < chunk->count) {
     i = interpretInstruction(vm, chunk, i);
   }

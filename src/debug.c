@@ -33,7 +33,7 @@ static int disassembleConstantInstruction(const char *name, Chunk *chunk,
 void disassembleChunk(Chunk *chunk) {
   printf("=== Chunk Start ===\n");
 
-  int i = 0;
+  uint32_t i = 0;
   while (i < chunk->count) {
     i = disassembleInstruction(chunk, i);
   }
