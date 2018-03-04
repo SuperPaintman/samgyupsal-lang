@@ -16,13 +16,13 @@ OBJECTS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 CFLAGS := \
 	-Wall \
 	-Werror \
-	-pedantic \
 	-Wempty-body \
 	-Wignored-qualifiers \
 	-Wmissing-field-initializers \
 	-Wsign-compare \
 	-Wtype-limits \
 	-Wuninitialized
+	# -pedantic
 LIB :=
 INC :=
 
