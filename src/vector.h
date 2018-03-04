@@ -81,6 +81,13 @@
 #define VECTOR_GET(type, vector, index) vectorGet##type(vector, index)
 #define VECTOR_RESIZE(type, vector, capacity)                                  \
   vectorResize##type(vector, capacity)
+#define VECTOR_FREE_FULL(type, vector)                                         \
+  do {                                                                         \
+    for (uint32_t i = 0, ii = vectorCount##type(vector); i < ii; i++) {        \
+      free(vectorGet##type(vector, i));                                        \
+    }                                                                          \
+    vectorFree##type(vector);                                                  \
+  } while (0)
 
 // Types
 typedef void *VectorItem;
