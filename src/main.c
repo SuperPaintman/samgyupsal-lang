@@ -5,7 +5,7 @@
 #include "vm.h"
 
 int main() {
-  const char *source = "print 1000 + 250 + 90 - 3";
+  const char *source = "print 1000 + 400 - 80 + 20 - 3";
 
   MAKE_VM(vm);
   MAKE_COMPILER(compiler, source);
