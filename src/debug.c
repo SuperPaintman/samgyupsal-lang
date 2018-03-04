@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "value.h"
+#include "vector.h"
 
 // Internal Macros
 #define CASE_SIMPLE_OPCODE(name, offset)                                       \
@@ -19,11 +20,11 @@ static int disassembleSimpleInstruction(const char *name, int offset) {
 
 static int disassembleConstantInstruction(const char *name, Chunk *chunk,
                                           int offset) {
-  uint8_t constant = chunk->code[offset + 1];
+  uint8_t constant = VECTOR_GET(CodeVector, &chunk->code, offset + 1);
 
   printf("%-16s %4d (", name, constant);
 
-  printValue(chunk->constants.values[constant]);
+  printValue(VECTOR_GET(ConstantVector, &chunk->constants, constant));
 
   printf(")\n");
 
@@ -34,7 +35,7 @@ void disassembleChunk(Chunk *chunk) {
   printf("=== Chunk Start ===\n");
 
   uint32_t i = 0;
-  while (i < chunk->count) {
+  while (i < VECTOR_COUNT(CodeVector, &chunk->code)) {
     i = disassembleInstruction(chunk, i);
   }
 
@@ -44,7 +45,7 @@ void disassembleChunk(Chunk *chunk) {
 int disassembleInstruction(Chunk *chunk, int offset) {
   printf("%04d ", offset);
 
-  uint8_t instruction = chunk->code[offset];
+  uint8_t instruction = VECTOR_GET(CodeVector, &chunk->code, offset);
   switch (instruction) {
     CASE_SIMPLE_OPCODE(OP_RETURN, offset);
 

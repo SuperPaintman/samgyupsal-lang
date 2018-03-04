@@ -4,11 +4,12 @@
 #include <stdlib.h>
 
 #include "value.h"
+#include "vector.h"
 
 static int interpretLoadConstant(VM *vm, Chunk *chunk, int offset) {
-  uint8_t constant = chunk->code[offset + 1];
+  uint8_t constant = VECTOR_GET(CodeVector, &chunk->code, offset + 1);
 
-  Value value = chunk->constants.values[constant];
+  Value value = VECTOR_GET(ConstantVector, &chunk->constants, constant);
 
   vm->stack[vm->sp++] = value;
 
@@ -43,13 +44,13 @@ void freeVM(VM *vm) { initVM(vm); }
 
 void interpret(VM *vm, Chunk *chunk) {
   uint32_t i = 0;
-  while (i < chunk->count) {
+  while (i < VECTOR_COUNT(CodeVector, &chunk->code)) {
     i = interpretInstruction(vm, chunk, i);
   }
 }
 
 int interpretInstruction(VM *vm, Chunk *chunk, int offset) {
-  uint8_t instruction = chunk->code[offset];
+  uint8_t instruction = VECTOR_GET(CodeVector, &chunk->code, offset);
   switch (instruction) {
   case OP_LOAD_CONSTANT:
     return interpretLoadConstant(vm, chunk, offset);

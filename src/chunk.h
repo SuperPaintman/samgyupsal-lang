@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "value.h"
+#include "vector.h"
 
 // Types
 typedef enum {
@@ -17,11 +18,12 @@ typedef enum {
   OP_RETURN
 } OpCode;
 
+VECTOR_TEMPLATE_DECLARATIONS(CodeVector, uint8_t);
+VECTOR_TEMPLATE_DECLARATIONS(ConstantVector, Value);
+
 typedef struct {
-  uint32_t count;
-  uint32_t capacity;
-  uint8_t *code;
-  ValueArray constants;
+  CodeVector code;
+  ConstantVector constants;
 } Chunk;
 
 // Macros
@@ -37,7 +39,7 @@ extern "C" {
 void initChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void writeChunk(Chunk *chunk, uint8_t byte);
-int addConstant(Chunk *chunk, Value value);
+uint32_t addConstant(Chunk *chunk, Value value);
 
 #ifdef __cplusplus
 }
