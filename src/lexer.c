@@ -51,7 +51,7 @@ static inline void skipWhitespaces(Lexer *lexer) {
 
     char c = peek(lexer, 1);
 
-    if (c == ' ' || c == '\t' || c == '\n') {
+    if (c == ' ' || c == '\t') {
       next(lexer, 1);
     } else {
       break;
@@ -118,6 +118,9 @@ Token lexToken(Lexer *lexer) {
   }
 
   switch (c) {
+  case '\n':
+    return makeToken(lexer, TOKEN_NEWLINE);
+
   case '+':
     return makeToken(lexer, TOKEN_PLUS);
   case '-':

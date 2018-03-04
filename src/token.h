@@ -15,6 +15,8 @@ typedef enum {
 
   TOKEN_PRINT,
 
+  TOKEN_NEWLINE,
+
   TOKEN_EOF,
 
   TOKEN_ERROR = -1
