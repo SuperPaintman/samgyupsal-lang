@@ -164,9 +164,25 @@ static void compileProgram(Compiler *compiler) {
   // Load the first token
   next(compiler);
 
-  while (!matchTokenType(compiler, TOKEN_EOF)) {
-    compileStmt(compiler);
+  if (isAtEnd(compiler)) {
+    return;
   }
+
+  do {
+    if (matchTokenType(compiler, TOKEN_NEWLINE)) {
+      continue;
+    }
+
+    compileStmt(compiler);
+
+    if (isAtEnd(compiler)) {
+      break;
+    }
+
+    debugCompiler(compiler);
+    expectTokenType(compiler, TOKEN_NEWLINE);
+
+  } while (!isAtEnd(compiler));
 }
 
 static void compileStmt(Compiler *compiler) {
@@ -198,7 +214,9 @@ static void compileExprBinary(Compiler *compiler) {
     return;
   }
 
-  // TODO: add check for TOKEN_NEWLINE
+  if (checkTokenType(compiler, TOKEN_NEWLINE)) {
+    return;
+  }
 
   if (!(matchTokenType(compiler, TOKEN_PLUS) ||
         matchTokenType(compiler, TOKEN_MINUS))) {
