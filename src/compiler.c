@@ -85,6 +85,28 @@ static void compileNumber(Compiler *compiler);
 VECTOR_TEMPLATE_IMPLEMENTATIONS(TokenVector, Token *);
 
 // Helpers
+// TOOD
+static void debugCompiler(Compiler *compiler) {
+  if (compiler->previous) {
+    printf("  previous:\n    ");
+    printToken(compiler->previous);
+  }
+  if (compiler->current) {
+    printf("  current:\n    ");
+    printToken(compiler->current);
+  }
+}
+
+// TOOD
+static void raiseError(Compiler *compiler) {
+  // TODO
+  printf("---------\n");
+  printf("Unexpected Token:\n");
+  debugCompiler(compiler);
+  printf("---------\n");
+  exit(1);
+}
+
 static inline bool isAtEnd(Compiler *compiler) {
   return compiler->current && compiler->current->type == TOKEN_EOF;
 }
@@ -119,26 +141,10 @@ static inline bool matchTokenType(Compiler *compiler, TokenType type) {
   return true;
 }
 
-// TOOD
-static void debugCompiler(Compiler *compiler) {
-  if (compiler->previous) {
-    printf("  previous:\n    ");
-    printToken(compiler->previous);
+static inline void expectTokenType(Compiler *compiler, TokenType type) {
+  if (!matchTokenType(compiler, type)) {
+    raiseError(compiler);
   }
-  if (compiler->current) {
-    printf("  current:\n    ");
-    printToken(compiler->current);
-  }
-}
-
-// TOOD
-static void raiseError(Compiler *compiler) {
-  // TODO
-  printf("---------\n");
-  printf("Unexpected Token:\n");
-  debugCompiler(compiler);
-  printf("---------\n");
-  exit(1);
 }
 
 // Code Emitters
