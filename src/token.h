@@ -8,6 +8,8 @@
 typedef enum {
   TOKEN_NUMBER,
 
+  TOKEN_IDENTIFIER,
+
   TOKEN_PLUS,
   TOKEN_MINUS,
 

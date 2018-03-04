@@ -3,6 +3,14 @@
 #include <ctype.h>
 #include <string.h>
 
+typedef struct {
+  const char *name;
+  size_t length;
+  TokenType type;
+} Keyword;
+
+static Keyword keywords[] = {{"print", 5, TOKEN_PRINT}};
+
 static inline bool isAtEnd(Lexer *lexer) { return *lexer->current == '\0'; }
 
 static inline char peek(Lexer *lexer, int offset) {
@@ -51,6 +59,29 @@ static inline void skipWhitespaces(Lexer *lexer) {
   } while (true);
 }
 
+static inline Token scanIdentifierToken(Lexer *lexer) {
+  while (isalpha(peek(lexer, 1))) {
+    next(lexer, 1);
+  }
+
+  size_t length = lexer->current - lexer->start;
+  for (uint32_t i = 0, ii = sizeof(keywords) / sizeof(Keyword); i < ii; i++) {
+    Keyword *keyword = &keywords[i];
+
+    if (keyword->length != length) {
+      continue;
+    }
+
+    if (memcmp(lexer->start, keyword->name, length) != 0) {
+      continue;
+    }
+
+    return makeToken(lexer, keyword->type);
+  }
+
+  return makeToken(lexer, TOKEN_IDENTIFIER);
+}
+
 static inline Token scanNumberToken(Lexer *lexer) {
   while (isdigit(peek(lexer, 1))) {
     next(lexer, 1);
@@ -77,6 +108,10 @@ Token lexToken(Lexer *lexer) {
   }
 
   char c = next(lexer, 1);
+
+  if (isalpha(c)) {
+    return scanIdentifierToken(lexer);
+  }
 
   if (isdigit(c)) {
     return scanNumberToken(lexer);
