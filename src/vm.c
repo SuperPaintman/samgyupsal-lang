@@ -27,6 +27,17 @@ static int interpretOpAdd(VM *vm, Chunk *chunk, int offset) {
   return offset + 1;
 }
 
+static int interpretOpSub(VM *vm, Chunk *chunk, int offset) {
+  Value a = vm->stack[vm->sp - 2];
+  Value b = vm->stack[vm->sp - 1];
+
+  vm->sp -= 2;
+
+  vm->stack[vm->sp++] = a - b;
+
+  return offset + 1;
+}
+
 static int interpretOpPrint(VM *vm, Chunk *chunk, int offset) {
   /** @todo: In normal interpetator print must push `Null` on the stack */
   vm->sp--;
@@ -57,6 +68,8 @@ int interpretInstruction(VM *vm, Chunk *chunk, int offset) {
 
   case OP_ADD:
     return interpretOpAdd(vm, chunk, offset);
+  case OP_SUB:
+    return interpretOpSub(vm, chunk, offset);
 
   case OP_PRINT:
     return interpretOpPrint(vm, chunk, offset);

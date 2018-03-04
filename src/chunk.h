@@ -12,6 +12,7 @@ typedef enum {
   OP_LOAD_CONSTANT,
 
   OP_ADD,
+  OP_SUB,
 
   OP_PRINT,
 
