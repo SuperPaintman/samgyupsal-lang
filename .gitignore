@@ -1,6 +1,6 @@
 # Build
-/bin/
+/bin/*
 !/bin/.gitkeep
 
-/build/
+/build/*
 !/build/.gitkeep
