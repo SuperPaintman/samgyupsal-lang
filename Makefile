@@ -5,7 +5,11 @@ SRCDIR = src
 BUILDDIR = build
 BINDIR = bin
 
-TARGET = $(BINDIR)/cli.exe
+ifeq ($(OS),Windows_NT)
+	TARGET = $(BINDIR)/cli.exe
+else
+	TARGET = $(BINDIR)/cli
+endif
 
 SRCEXT = c
 
