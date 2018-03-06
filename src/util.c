@@ -5,7 +5,11 @@
 
 char *readFile(char *filename) {
   FILE *f;
+#if defined(__STDC_LIB_EXT1__)
   fopen_s(&f, filename, "rb");
+#else
+  f = fopen(filename, "rb");
+#endif
 
   if (f == NULL) {
     return NULL;
