@@ -179,9 +179,7 @@ static void compileProgram(Compiler *compiler) {
       break;
     }
 
-    debugCompiler(compiler);
     expectTokenType(compiler, TOKEN_NEWLINE);
-
   } while (!isAtEnd(compiler));
 }
 
