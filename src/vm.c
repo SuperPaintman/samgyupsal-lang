@@ -6,43 +6,39 @@
 #include "value.h"
 #include "vector.h"
 
+// Internal macros
+#define INTERPRET_BINOP_TEMPLATE(name, op)                                     \
+  static int interpretOp##name(VM *vm, Chunk *chunk, int offset) {             \
+    Value b = pop(vm);                                                         \
+    Value a = pop(vm);                                                         \
+                                                                               \
+    push(vm, a op b);                                                          \
+                                                                               \
+    return offset + 1;                                                         \
+  }
+
+static inline void push(VM *vm, Value value) { vm->stack[vm->sp++] = value; }
+
+static inline Value pop(VM *vm) { return vm->stack[--vm->sp]; }
+
 static int interpretLoadConstant(VM *vm, Chunk *chunk, int offset) {
   uint8_t constant = VECTOR_GET(CodeVector, &chunk->code, offset + 1);
 
   Value value = VECTOR_GET(ConstantVector, &chunk->constants, constant);
 
-  vm->stack[vm->sp++] = value;
+  push(vm, value);
 
   return offset + 2;
 }
 
-static int interpretOpAdd(VM *vm, Chunk *chunk, int offset) {
-  Value a = vm->stack[vm->sp - 2];
-  Value b = vm->stack[vm->sp - 1];
-
-  vm->sp -= 2;
-
-  vm->stack[vm->sp++] = a + b;
-
-  return offset + 1;
-}
-
-static int interpretOpSub(VM *vm, Chunk *chunk, int offset) {
-  Value a = vm->stack[vm->sp - 2];
-  Value b = vm->stack[vm->sp - 1];
-
-  vm->sp -= 2;
-
-  vm->stack[vm->sp++] = a - b;
-
-  return offset + 1;
-}
+INTERPRET_BINOP_TEMPLATE(Add, +);
+INTERPRET_BINOP_TEMPLATE(Sub, -);
+INTERPRET_BINOP_TEMPLATE(Mul, *);
+INTERPRET_BINOP_TEMPLATE(Div, /);
 
 static int interpretOpPrint(VM *vm, Chunk *chunk, int offset) {
   /** @todo: In normal interpetator print must push `Null` on the stack */
-  vm->sp--;
-
-  Value val = vm->stack[vm->sp];
+  Value val = pop(vm);
 
   printf("%g\n", val);
 
