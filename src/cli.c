@@ -48,13 +48,12 @@ void printHelp() {
   for (int i = 0, ii = sizeof(flags) / sizeof(Flag *); i < ii; i++) {
     Flag *flag = flags[i];
 
-    printf("  ");
-    printf("%-4s ", flag->shortForm ? flag->shortForm : "");
-    printf("%-20s ", flag->fullForm ? flag->fullForm : "");
-    printf("%-16s ", flag->property ? flag->property : "");
-    printf("%s ", flag->description ? flag->description : "");
-
-    printf("\n");
+    printf("  %-4s %-20s %-16s %s "
+           "\n",
+           flag->shortForm ? flag->shortForm : "",
+           flag->fullForm ? flag->fullForm : "",
+           flag->property ? flag->property : "",
+           flag->description ? flag->description : "");
   }
 }
 
