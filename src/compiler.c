@@ -266,49 +266,45 @@ static void compileExpr(Compiler *compiler) {
 static void compileExprBinaryAdditive(Compiler *compiler) {
   compileExprBinaryMultiplicative(compiler);
 
-  if (!(matchTokenType(compiler, TOKEN_PLUS) ||
-        matchTokenType(compiler, TOKEN_MINUS))) {
-    return;
-  }
+  while (matchTokenType(compiler, TOKEN_PLUS) ||
+         matchTokenType(compiler, TOKEN_MINUS)) {
+    TokenType opType = compiler->previous->type;
 
-  TokenType opType = compiler->previous->type;
+    compileExprBinaryMultiplicative(compiler);
 
-  compileExprBinaryMultiplicative(compiler);
-
-  switch (opType) {
-  case TOKEN_PLUS:
-    emitCode(compiler, OP_ADD);
-    break;
-  case TOKEN_MINUS:
-    emitCode(compiler, OP_SUB);
-    break;
-  default:
-    // TODO: add error handler
-    RAISE_ERROR(compiler);
+    switch (opType) {
+    case TOKEN_PLUS:
+      emitCode(compiler, OP_ADD);
+      break;
+    case TOKEN_MINUS:
+      emitCode(compiler, OP_SUB);
+      break;
+    default:
+      // TODO: add error handler
+      RAISE_ERROR(compiler);
+    }
   }
 }
 
 static void compileExprBinaryMultiplicative(Compiler *compiler) {
   compileExprUnary(compiler);
 
-  if (!(matchTokenType(compiler, TOKEN_STAR) ||
-        matchTokenType(compiler, TOKEN_SLASH))) {
-    return;
-  }
+  while (matchTokenType(compiler, TOKEN_STAR) ||
+         matchTokenType(compiler, TOKEN_SLASH)) {
+    TokenType opType = compiler->previous->type;
+    compileExprUnary(compiler);
 
-  TokenType opType = compiler->previous->type;
-  compileExprUnary(compiler);
-
-  switch (opType) {
-  case TOKEN_STAR:
-    emitCode(compiler, OP_MUL);
-    break;
-  case TOKEN_SLASH:
-    emitCode(compiler, OP_DIV);
-    break;
-  default:
-    // TODO: add error handler
-    RAISE_ERROR(compiler);
+    switch (opType) {
+    case TOKEN_STAR:
+      emitCode(compiler, OP_MUL);
+      break;
+    case TOKEN_SLASH:
+      emitCode(compiler, OP_DIV);
+      break;
+    default:
+      // TODO: add error handler
+      RAISE_ERROR(compiler);
+    }
   }
 }
 
