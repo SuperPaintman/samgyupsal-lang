@@ -45,7 +45,7 @@ void printHelp() {
          "Options and arguments:\n",
          binname);
 
-  for (uint32_t i = 0, ii = sizeof(flags) / sizeof(Flag *); i < ii; i++) {
+  for (int i = 0, ii = sizeof(flags) / sizeof(Flag *); i < ii; i++) {
     Flag *flag = flags[i];
 
     printf("  ");
@@ -75,7 +75,7 @@ void printArgumentParsingErrnoDescription(ArgumentParsingErrno err) {
   }
 }
 
-ArgumentParsingErrno parseArgument(char *arg, char *next, uint32_t offset) {
+ArgumentParsingErrno parseArgument(char *arg, char *next, int *offset) {
   if (argumentsMode) {
     VECTOR_ADD(Vector, &arguments, arg);
 
@@ -98,7 +98,7 @@ ArgumentParsingErrno parseArgument(char *arg, char *next, uint32_t offset) {
     return OK;
   }
 
-  for (uint32_t i = 0, ii = sizeof(flags) / sizeof(Flag *); i < ii; i++) {
+  for (int i = 0, ii = sizeof(flags) / sizeof(Flag *); i < ii; i++) {
     Flag *flag = flags[i];
 
     if (!((flag->shortForm && strcmp(arg, flag->shortForm) == 0) ||
@@ -112,7 +112,7 @@ ArgumentParsingErrno parseArgument(char *arg, char *next, uint32_t offset) {
       }
 
       flag->value = arg;
-      offset++;
+      (*offset)++;
     } else {
       flag->on = true;
     }
@@ -129,13 +129,13 @@ ArgumentParsingErrno parseArguments(int argc, char **argv) {
   argumentsMode = false;
   VECTOR_INIT(Vector, &arguments);
 
-  for (uint32_t i = 1; i < argc; i++) {
+  for (int i = 1; i < argc; i++) {
     char *arg1 = argv[i];
     char *arg2 = (i + 1) < argc ? argv[i + 1] : NULL;
 
-    int res = 0;
-    if (res = parseArgument(arg1, arg2, &i)) {
-      return res;
+    int err = parseArgument(arg1, arg2, &i);
+    if (err) {
+      return err;
     }
   }
 
@@ -143,8 +143,8 @@ ArgumentParsingErrno parseArguments(int argc, char **argv) {
 }
 
 int runCLI(int argc, char **argv) {
-  int err = 0;
-  if (err = parseArguments(argc, argv)) {
+  int err = parseArguments(argc, argv);
+  if (err) {
     printArgumentParsingErrnoDescription(err);
     return 1;
   }
