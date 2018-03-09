@@ -10,27 +10,27 @@
 // Internal macros
 #define INTERPRET_BINOP_TEMPLATE(name, op)                                     \
   static int interpretOp##name(VM *vm, Chunk *chunk, int offset) {             \
-    Value b = pop(vm);                                                         \
-    Value a = pop(vm);                                                         \
+    Value *b = pop(vm);                                                        \
+    Value *a = pop(vm);                                                        \
                                                                                \
-    if (!IS_NUMBER(a) || !IS_NUMBER(b)) {                                      \
+    if (!IS_NUMBER(*a) || !IS_NUMBER(*b)) {                                    \
       printf("Operands must be numbers\n");                                    \
                                                                                \
       exit(1);                                                                 \
     }                                                                          \
-    push(vm, MAKE_NUMBER(AS_NUMBER(a) op AS_NUMBER(b)));                       \
+    push(vm, MAKE_NUMBER(AS_NUMBER(*a) op AS_NUMBER(*b)));                     \
                                                                                \
     return offset + 1;                                                         \
   }
 
 static inline void push(VM *vm, Value value) { vm->stack[vm->sp++] = value; }
 
-static inline Value pop(VM *vm) { return vm->stack[--vm->sp]; }
+static inline Value *pop(VM *vm) { return &vm->stack[--vm->sp]; }
 
-static inline int concatenateStrings(VM *vm, Chunk *chunk, Value strA,
-                                     Value strB, int offset) {
-  ObjectString *a = AS_STRING(strA);
-  ObjectString *b = AS_STRING(strB);
+static inline int concatenateStrings(VM *vm, Chunk *chunk, Value *strA,
+                                     Value *strB, int offset) {
+  ObjectString *a = AS_STRING(*strA);
+  ObjectString *b = AS_STRING(*strB);
 
   uint32_t length = a->length + b->length;
   char *buf = malloc(sizeof(char) * (length + 1));
@@ -62,15 +62,15 @@ static int interpretLoadConstant(VM *vm, Chunk *chunk, int offset) {
 }
 
 static int interpretOpAdd(VM *vm, Chunk *chunk, int offset) {
-  Value b = pop(vm);
-  Value a = pop(vm);
+  Value *b = pop(vm);
+  Value *a = pop(vm);
 
-  if (IS_STRING(a) && IS_STRING(b)) {
+  if (IS_STRING(*a) && IS_STRING(*b)) {
     return concatenateStrings(vm, chunk, a, b, offset);
   }
 
-  if (IS_NUMBER(a) && IS_NUMBER(b)) {
-    push(vm, MAKE_NUMBER(AS_NUMBER(a) + AS_NUMBER(b)));
+  if (IS_NUMBER(*a) && IS_NUMBER(*b)) {
+    push(vm, MAKE_NUMBER(AS_NUMBER(*a) + AS_NUMBER(*b)));
 
     return offset + 1;
   }
@@ -85,25 +85,25 @@ INTERPRET_BINOP_TEMPLATE(Div, /);
 
 static int interpretOpPrint(VM *vm, Chunk *chunk, int offset) {
   /** @todo: In normal interpetator print must push `Null` on the stack */
-  Value val = pop(vm);
+  Value *val = pop(vm);
 
-  switch (val.type) {
+  switch (val->type) {
   case VALUE_NONE:
     printf("None");
     break;
   case VALUE_BOOLEAN:
-    printf(AS_BOOLEAN(val) ? "True" : "False");
+    printf(AS_BOOLEAN(*val) ? "True" : "False");
     break;
   case VALUE_NUMBER:
-    printf("%g", AS_NUMBER(val));
+    printf("%g", AS_NUMBER(*val));
     break;
   case VALUE_OBJECT:
-    if (!IS_STRING(val)) {
+    if (!IS_STRING(*val)) {
       printf("UnexpectedObject");
       break;
     }
 
-    printf("%s", AS_CSTRING(val));
+    printf("%s", AS_CSTRING(*val));
     break;
   default:
     // Unreachable
