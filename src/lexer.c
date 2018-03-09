@@ -90,6 +90,12 @@ static inline Token scanNumberToken(Lexer *lexer) {
   return makeToken(lexer, TOKEN_NUMBER);
 }
 
+static inline void skipComment(Lexer *lexer) {
+  while (!isAtEnd(lexer) && peek(lexer, 1) != '\n') {
+    next(lexer, 1);
+  }
+}
+
 void initLexer(Lexer *lexer, const char *source) {
   lexer->source = source;
   lexer->current = source;
@@ -120,6 +126,10 @@ Token lexToken(Lexer *lexer) {
   switch (c) {
   case '\n':
     return makeToken(lexer, TOKEN_NEWLINE);
+
+  case '#':
+    skipComment(lexer);
+    return lexToken(lexer);
 
   case '+':
     return makeToken(lexer, TOKEN_PLUS);
