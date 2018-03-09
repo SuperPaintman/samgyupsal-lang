@@ -125,6 +125,10 @@ Token lexToken(Lexer *lexer) {
     return makeToken(lexer, TOKEN_PLUS);
   case '-':
     return makeToken(lexer, TOKEN_MINUS);
+  case '*':
+    return makeToken(lexer, TOKEN_STAR);
+  case '/':
+    return makeToken(lexer, TOKEN_SLASH);
 
   default:
     return makeError("Unexpected Token");
