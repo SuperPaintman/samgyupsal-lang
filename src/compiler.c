@@ -6,6 +6,10 @@
 #include "debug.h"
 #include <stdio.h>
 
+// Internal macros
+#define RAISE_ERROR(compiler) raiseError(compiler, __FUNCTION__, __LINE__)
+#define DEBUG_COMPILER(compiler) debugCompiler(compiler, __FUNCTION__, __LINE__)
+
 // Declarations
 /**
  * ```ebnf
@@ -86,7 +90,8 @@ VECTOR_TEMPLATE_IMPLEMENTATIONS(TokenVector, Token *);
 
 // Helpers
 // TOOD
-static void debugCompiler(Compiler *compiler) {
+static void debugCompiler(Compiler *compiler, const char *funname, int line) {
+  printf("Debug compiler at %d in %s:\n", line, funname);
   if (compiler->previous) {
     printf("  previous:\n    ");
     printToken(compiler->previous);
@@ -98,11 +103,11 @@ static void debugCompiler(Compiler *compiler) {
 }
 
 // TOOD
-static void raiseError(Compiler *compiler) {
+static void raiseError(Compiler *compiler, const char *funname, int line) {
   // TODO
   printf("---------\n");
-  printf("Unexpected Token:\n");
-  debugCompiler(compiler);
+  printf("Unexpected Token at %d in %s:\n", line, funname);
+  debugCompiler(compiler, funname, line);
   printf("---------\n");
   exit(1);
 }
@@ -143,7 +148,7 @@ static inline bool matchTokenType(Compiler *compiler, TokenType type) {
 
 static inline void expectTokenType(Compiler *compiler, TokenType type) {
   if (!matchTokenType(compiler, type)) {
-    raiseError(compiler);
+    RAISE_ERROR(compiler);
   }
 }
 
@@ -245,7 +250,7 @@ static void compileTerm(Compiler *compiler) {
     return compileNumber(compiler);
   }
 
-  raiseError(compiler);
+  RAISE_ERROR(compiler);
 }
 
 static void compileNumber(Compiler *compiler) {
