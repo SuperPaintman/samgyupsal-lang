@@ -6,6 +6,9 @@
 
 // Types
 typedef enum {
+  TOKEN_NONE,
+  TOKEN_TRUE,
+  TOKEN_FALSE,
   TOKEN_NUMBER,
 
   TOKEN_IDENTIFIER,

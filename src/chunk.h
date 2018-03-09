@@ -9,6 +9,10 @@
 
 // Types
 typedef enum {
+  OP_NONE,
+  OP_TRUE,
+  OP_FALSE,
+
   OP_LOAD_CONSTANT,
 
   OP_ADD,

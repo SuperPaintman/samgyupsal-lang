@@ -12,7 +12,12 @@
     Value b = pop(vm);                                                         \
     Value a = pop(vm);                                                         \
                                                                                \
-    push(vm, a op b);                                                          \
+    if (!IS_NUMBER(a) || !IS_NUMBER(b)) {                                      \
+      printf("Operands must be numbers\n");                                    \
+                                                                               \
+      exit(1);                                                                 \
+    }                                                                          \
+    push(vm, MAKE_NUMBER(AS_NUMBER(a) op AS_NUMBER(b)));                       \
                                                                                \
     return offset + 1;                                                         \
   }
@@ -40,7 +45,22 @@ static int interpretOpPrint(VM *vm, Chunk *chunk, int offset) {
   /** @todo: In normal interpetator print must push `Null` on the stack */
   Value val = pop(vm);
 
-  printf("%g\n", val);
+  switch (val.type) {
+  case VALUE_NONE:
+    printf("None");
+    break;
+  case VALUE_BOOLEAN:
+    printf(AS_BOOLEAN(val) ? "True" : "False");
+    break;
+  case VALUE_NUMBER:
+    printf("%g", AS_NUMBER(val));
+    break;
+  default:
+    // Unreachable
+    printf("???");
+  }
+
+  printf("\n");
 
   return offset + 1;
 }
@@ -59,6 +79,16 @@ void interpret(VM *vm, Chunk *chunk) {
 int interpretInstruction(VM *vm, Chunk *chunk, int offset) {
   uint8_t instruction = VECTOR_GET(CodeVector, &chunk->code, offset);
   switch (instruction) {
+  case OP_NONE:
+    push(vm, MAKE_NONE());
+    return offset + 1;
+  case OP_TRUE:
+    push(vm, MAKE_BOOLEAN(true));
+    return offset + 1;
+  case OP_FALSE:
+    push(vm, MAKE_BOOLEAN(false));
+    return offset + 1;
+
   case OP_LOAD_CONSTANT:
     return interpretLoadConstant(vm, chunk, offset);
 

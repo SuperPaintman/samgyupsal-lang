@@ -9,7 +9,10 @@ typedef struct {
   TokenType type;
 } Keyword;
 
-static Keyword keywords[] = {{"print", 5, TOKEN_PRINT}};
+static Keyword keywords[] = {{"None", 4, TOKEN_NONE},
+                             {"True", 4, TOKEN_TRUE},
+                             {"False", 5, TOKEN_FALSE},
+                             {"print", 5, TOKEN_PRINT}};
 
 static inline bool isAtEnd(Lexer *lexer) { return *lexer->current == '\0'; }
 

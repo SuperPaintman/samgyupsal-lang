@@ -92,11 +92,27 @@ static void compileExprUnary(Compiler *compiler);
  * ```ebnf
  * term
  *   = IDENTIFIER
+ *   | NONE
+ *   | BOOLEAN
  *   | NUMBER
  *   ;
  * ```
  */
 static void compileTerm(Compiler *compiler);
+
+/**
+ * ```ebnf
+ * NONE
+ * ```
+ */
+static void compileNone(Compiler *compiler);
+
+/**
+ * ```ebnf
+ * BOOLEAN
+ * ```
+ */
+static void compileBoolean(Compiler *compiler);
 
 /**
  * ```ebnf
@@ -286,6 +302,15 @@ static void compileExprUnary(Compiler *compiler) {
 }
 
 static void compileTerm(Compiler *compiler) {
+  if (matchTokenType(compiler, TOKEN_NONE)) {
+    return compileNone(compiler);
+  }
+
+  if (matchTokenType(compiler, TOKEN_TRUE) ||
+      matchTokenType(compiler, TOKEN_FALSE)) {
+    return compileBoolean(compiler);
+  }
+
   if (matchTokenType(compiler, TOKEN_NUMBER)) {
     return compileNumber(compiler);
   }
@@ -293,8 +318,15 @@ static void compileTerm(Compiler *compiler) {
   RAISE_ERROR(compiler);
 }
 
+static void compileNone(Compiler *compiler) { emitCode(compiler, OP_NONE); }
+
+static void compileBoolean(Compiler *compiler) {
+  emitCode(compiler,
+           compiler->previous->type == TOKEN_TRUE ? OP_TRUE : OP_FALSE);
+}
+
 static void compileNumber(Compiler *compiler) {
-  Value value = strtod(compiler->previous->start, NULL);
+  Value value = MAKE_NUMBER(strtod(compiler->previous->start, NULL));
 
   return emitLoadConstant(compiler, value);
 }

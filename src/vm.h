@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "chunk.h"
+#include "value.h"
 
 // Macros
 #define STACK_SIZE 128

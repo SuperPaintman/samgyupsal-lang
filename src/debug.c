@@ -10,7 +10,22 @@
   case name:                                                                   \
     return disassembleSimpleInstruction(#name, offset)
 
-static void printValue(Value value) { printf("%g", value); }
+static void printValue(Value value) {
+  switch (value.type) {
+  case VALUE_NONE:
+    printf("None");
+    break;
+  case VALUE_BOOLEAN:
+    printf(AS_BOOLEAN(value) ? "True" : "False");
+    break;
+  case VALUE_NUMBER:
+    printf("%g", AS_NUMBER(value));
+    break;
+  default:
+    // Unreachable
+    printf("???");
+  }
+}
 
 static int disassembleSimpleInstruction(const char *name, int offset) {
   printf("%s\n", name);
@@ -48,6 +63,10 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   uint8_t instruction = VECTOR_GET(CodeVector, &chunk->code, offset);
   switch (instruction) {
     CASE_SIMPLE_OPCODE(OP_RETURN, offset);
+
+    CASE_SIMPLE_OPCODE(OP_NONE, offset);
+    CASE_SIMPLE_OPCODE(OP_TRUE, offset);
+    CASE_SIMPLE_OPCODE(OP_FALSE, offset);
 
     CASE_SIMPLE_OPCODE(OP_ADD, offset);
     CASE_SIMPLE_OPCODE(OP_SUB, offset);
