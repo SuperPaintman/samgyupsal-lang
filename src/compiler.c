@@ -379,8 +379,8 @@ void freeCompiler(Compiler *compiler) {
   initCompiler(compiler, compiler->source);
 }
 
-Chunk compile(Compiler *compiler) {
+Chunk *compile(Compiler *compiler) {
   compileProgram(compiler);
 
-  return compiler->chunk;
+  return &compiler->chunk;
 }

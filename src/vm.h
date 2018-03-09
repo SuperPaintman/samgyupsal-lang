@@ -18,7 +18,6 @@
 typedef struct {
   uint32_t sp;
   Value stack[STACK_SIZE];
-  Object *objects;
 } VM;
 
 #ifdef __cplusplus

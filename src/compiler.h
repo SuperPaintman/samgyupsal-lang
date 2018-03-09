@@ -32,7 +32,7 @@ extern "C" {
 // Declarations
 void initCompiler(Compiler *compiler, const char *source);
 void freeCompiler(Compiler *compiler);
-Chunk compile(Compiler *compiler);
+Chunk *compile(Compiler *compiler);
 
 #ifdef __cplusplus
 }

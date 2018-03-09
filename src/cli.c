@@ -171,13 +171,13 @@ int runCLI(int argc, char **argv) {
   MAKE_VM(vm);
   MAKE_COMPILER(compiler, source);
 
-  Chunk chunk = compile(&compiler);
+  Chunk *chunk = compile(&compiler);
 
   if (flagPrintBytecode.on) {
-    disassembleChunk(&chunk);
+    disassembleChunk(chunk);
   }
 
-  interpret(&vm, &chunk);
+  interpret(&vm, chunk);
 
   freeCompiler(&compiler);
   freeVM(&vm);
