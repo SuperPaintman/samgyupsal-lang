@@ -31,6 +31,7 @@ VECTOR_TEMPLATE_DECLARATIONS(ConstantVector, Value);
 typedef struct {
   CodeVector code;
   ConstantVector constants;
+  Object *objects;
 } Chunk;
 
 // Macros

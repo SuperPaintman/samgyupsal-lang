@@ -95,6 +95,7 @@ static void compileExprUnary(Compiler *compiler);
  *   | NONE
  *   | BOOLEAN
  *   | NUMBER
+ *   | STRING
  *   ;
  * ```
  */
@@ -120,6 +121,13 @@ static void compileBoolean(Compiler *compiler);
  * ```
  */
 static void compileNumber(Compiler *compiler);
+
+/**
+ * ```ebnf
+ * STRING
+ * ```
+ */
+static void compileString(Compiler *compiler);
 
 // Vectors
 VECTOR_TEMPLATE_IMPLEMENTATIONS(TokenVector, Token *);
@@ -198,6 +206,15 @@ static void emitLoadConstant(Compiler *compiler, Value value) {
 
   writeChunk(&compiler->chunk, OP_LOAD_CONSTANT);
   writeChunk(&compiler->chunk, val);
+}
+
+static void emitLoadObject(Compiler *compiler, Value value) {
+  Object *next = compiler->chunk.objects;
+
+  compiler->chunk.objects = AS_OBJECT(value);
+  compiler->chunk.objects->next = next;
+
+  emitLoadConstant(compiler, value);
 }
 
 // Compile
@@ -315,6 +332,10 @@ static void compileTerm(Compiler *compiler) {
     return compileNumber(compiler);
   }
 
+  if (matchTokenType(compiler, TOKEN_STRING)) {
+    return compileString(compiler);
+  }
+
   RAISE_ERROR(compiler);
 }
 
@@ -329,6 +350,13 @@ static void compileNumber(Compiler *compiler) {
   Value value = MAKE_NUMBER(strtod(compiler->previous->start, NULL));
 
   return emitLoadConstant(compiler, value);
+}
+
+static void compileString(Compiler *compiler) {
+  Value value = MAKE_OBJECT(makeString(compiler->previous->start + 1,
+                                       compiler->previous->length - 2));
+
+  return emitLoadObject(compiler, value);
 }
 
 // Exposed

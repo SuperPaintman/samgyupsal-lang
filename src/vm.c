@@ -55,6 +55,14 @@ static int interpretOpPrint(VM *vm, Chunk *chunk, int offset) {
   case VALUE_NUMBER:
     printf("%g", AS_NUMBER(val));
     break;
+  case VALUE_OBJECT:
+    if (!IS_STRING(val)) {
+      printf("UnexpectedObject");
+      break;
+    }
+
+    printf("%s", AS_CSTRING(val));
+    break;
   default:
     // Unreachable
     printf("???");

@@ -21,6 +21,14 @@ static void printValue(Value value) {
   case VALUE_NUMBER:
     printf("%g", AS_NUMBER(value));
     break;
+  case VALUE_OBJECT:
+    if (!IS_STRING(value)) {
+      printf("UnexpectedObject");
+      break;
+    }
+
+    printf("\"%s\"", AS_CSTRING(value));
+    break;
   default:
     // Unreachable
     printf("???");

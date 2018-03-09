@@ -93,6 +93,22 @@ static inline Token scanNumberToken(Lexer *lexer) {
   return makeToken(lexer, TOKEN_NUMBER);
 }
 
+static inline Token lexStringToken(Lexer *lexer) {
+  // Dummy string lexer without escaping and other cool features
+  while (!isAtEnd(lexer) && peek(lexer, 1) != '"') {
+    next(lexer, 1);
+  }
+
+  if (isAtEnd(lexer)) {
+    return makeError("Unexpected end of string");
+  }
+
+  // Eat '""
+  next(lexer, 1);
+
+  return makeToken(lexer, TOKEN_STRING);
+}
+
 static inline void skipComment(Lexer *lexer) {
   while (!isAtEnd(lexer) && peek(lexer, 1) != '\n') {
     next(lexer, 1);
@@ -133,6 +149,9 @@ Token lexToken(Lexer *lexer) {
   case '#':
     skipComment(lexer);
     return lexToken(lexer);
+
+  case '"':
+    return lexStringToken(lexer);
 
   case '+':
     return makeToken(lexer, TOKEN_PLUS);

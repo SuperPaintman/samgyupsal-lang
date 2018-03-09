@@ -11,11 +11,13 @@ VECTOR_TEMPLATE_IMPLEMENTATIONS(ConstantVector, Value);
 void initChunk(Chunk *chunk) {
   VECTOR_INIT(CodeVector, &chunk->code);
   VECTOR_INIT(ConstantVector, &chunk->constants);
+  chunk->objects = NULL;
 }
 
 void freeChunk(Chunk *chunk) {
   VECTOR_FREE(ConstantVector, &chunk->constants);
   VECTOR_FREE(CodeVector, &chunk->code);
+  freeObjects(chunk->objects);
   initChunk(chunk);
 }
 
