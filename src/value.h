@@ -69,7 +69,8 @@ extern "C" {
 void initObject(Object *object, ObjectType type);
 void initObjectString(ObjectString *object, char *chars, uint32_t length);
 Object *makeObject(ObjectType type);
-ObjectString *makeString(const char *chars, uint32_t length);
+ObjectString *makeString(char *chars, uint32_t length);
+ObjectString *copyString(const char *chars, uint32_t length);
 void freeObject(Object *object);
 void freeObjects(Object *objects);
 

@@ -353,7 +353,7 @@ static void compileNumber(Compiler *compiler) {
 }
 
 static void compileString(Compiler *compiler) {
-  Value value = MAKE_OBJECT(makeString(compiler->previous->start + 1,
+  Value value = MAKE_OBJECT(copyString(compiler->previous->start + 1,
                                        compiler->previous->length - 2));
 
   return emitLoadObject(compiler, value);

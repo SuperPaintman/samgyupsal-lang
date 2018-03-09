@@ -22,16 +22,20 @@ void initObjectString(ObjectString *object, char *chars, uint32_t length) {
   object->chars = chars;
 }
 
-ObjectString *makeString(const char *chars, uint32_t length) {
+ObjectString *makeString(char *chars, uint32_t length) {
+  MAKE_OBJ(object, ObjectString, OBJECT_STRING);
+  initObjectString(object, chars, length);
+
+  return object;
+}
+
+ObjectString *copyString(const char *chars, uint32_t length) {
   char *buf = malloc(sizeof(char) * (length + 1));
 
   memcpy(buf, chars, length);
   buf[length] = '\0';
 
-  MAKE_OBJ(object, ObjectString, OBJECT_STRING);
-  initObjectString(object, buf, length);
-
-  return object;
+  return makeString(buf, length);
 }
 
 void freeObject(Object *object) {

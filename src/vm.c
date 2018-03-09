@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "value.h"
 #include "vector.h"
@@ -26,6 +27,30 @@ static inline void push(VM *vm, Value value) { vm->stack[vm->sp++] = value; }
 
 static inline Value pop(VM *vm) { return vm->stack[--vm->sp]; }
 
+static inline int concatenateStrings(VM *vm, Chunk *chunk, Value strA,
+                                     Value strB, int offset) {
+  ObjectString *a = AS_STRING(strA);
+  ObjectString *b = AS_STRING(strB);
+
+  uint32_t length = a->length + b->length;
+  char *buf = malloc(sizeof(char) * (length + 1));
+
+  memcpy(buf, a->chars, a->length);
+  memcpy(buf + a->length, b->chars, b->length);
+  buf[length] = '\0';
+
+  Value value = MAKE_OBJECT(makeString(buf, length));
+
+  Object *next = chunk->objects;
+
+  chunk->objects = AS_OBJECT(value);
+  chunk->objects->next = next;
+
+  push(vm, value);
+
+  return offset + 1;
+}
+
 static int interpretLoadConstant(VM *vm, Chunk *chunk, int offset) {
   uint8_t constant = VECTOR_GET(CodeVector, &chunk->code, offset + 1);
 
@@ -36,7 +61,24 @@ static int interpretLoadConstant(VM *vm, Chunk *chunk, int offset) {
   return offset + 2;
 }
 
-INTERPRET_BINOP_TEMPLATE(Add, +);
+static int interpretOpAdd(VM *vm, Chunk *chunk, int offset) {
+  Value b = pop(vm);
+  Value a = pop(vm);
+
+  if (IS_STRING(a) && IS_STRING(b)) {
+    return concatenateStrings(vm, chunk, a, b, offset);
+  }
+
+  if (IS_NUMBER(a) && IS_NUMBER(b)) {
+    push(vm, MAKE_NUMBER(AS_NUMBER(a) + AS_NUMBER(b)));
+
+    return offset + 1;
+  }
+
+  printf("Operands must be numbers\n");
+  exit(1);
+}
+
 INTERPRET_BINOP_TEMPLATE(Sub, -);
 INTERPRET_BINOP_TEMPLATE(Mul, *);
 INTERPRET_BINOP_TEMPLATE(Div, /);
