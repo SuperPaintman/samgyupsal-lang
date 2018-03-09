@@ -51,8 +51,7 @@ static void compileStmtExpr(Compiler *compiler);
 /**
  * ```ebnf
  * expr
- *   = term
- *   | expr_binary
+ *   = expr_binary_additive
  *   ;
  * ```
  */
@@ -60,13 +59,34 @@ static void compileExpr(Compiler *compiler);
 
 /**
  * ```ebnf
- * expr_binary
- *   = term '+' term
+ * expr_binary_additive
+ *   = expr_binary_multiplicative
+ *   | term '+' term
  *   | term '-' term
  *   ;
  * ```
  */
-static void compileExprBinary(Compiler *compiler);
+static void compileExprBinaryAdditive(Compiler *compiler);
+
+/**
+ * ```ebnf
+ * expr_binary_multiplicative
+ *   = expr_unary
+ *   | term '*' term
+ *   | term '/' term
+ *   ;
+ * ```
+ */
+static void compileExprBinaryMultiplicative(Compiler *compiler);
+
+/**
+ * ```ebnf
+ * expr_unary
+ *   = term
+ *   ;
+ * ```
+ */
+static void compileExprUnary(Compiler *compiler);
 
 /**
  * ```ebnf
@@ -207,28 +227,20 @@ static void compileStmtExpr(Compiler *compiler) {
 }
 
 static void compileExpr(Compiler *compiler) {
-  compileTerm(compiler);
-
-  compileExprBinary(compiler);
+  compileExprBinaryAdditive(compiler);
 }
 
-static void compileExprBinary(Compiler *compiler) {
-  if (isAtEnd(compiler)) {
-    return;
-  }
-
-  if (checkTokenType(compiler, TOKEN_NEWLINE)) {
-    return;
-  }
+static void compileExprBinaryAdditive(Compiler *compiler) {
+  compileExprBinaryMultiplicative(compiler);
 
   if (!(matchTokenType(compiler, TOKEN_PLUS) ||
         matchTokenType(compiler, TOKEN_MINUS))) {
-    raiseError(compiler);
+    return;
   }
 
   TokenType opType = compiler->previous->type;
 
-  compileTerm(compiler);
+  compileExprBinaryMultiplicative(compiler);
 
   switch (opType) {
   case TOKEN_PLUS:
@@ -239,10 +251,38 @@ static void compileExprBinary(Compiler *compiler) {
     break;
   default:
     // TODO: add error handler
-    exit(1);
+    RAISE_ERROR(compiler);
+  }
+}
+
+static void compileExprBinaryMultiplicative(Compiler *compiler) {
+  compileExprUnary(compiler);
+
+  if (!(matchTokenType(compiler, TOKEN_STAR) ||
+        matchTokenType(compiler, TOKEN_SLASH))) {
+    return;
   }
 
-  return compileExprBinary(compiler);
+  TokenType opType = compiler->previous->type;
+  compileExprUnary(compiler);
+
+  switch (opType) {
+  case TOKEN_STAR:
+    emitCode(compiler, OP_MUL);
+    break;
+  case TOKEN_SLASH:
+    emitCode(compiler, OP_DIV);
+    break;
+  default:
+    // TODO: add error handler
+    RAISE_ERROR(compiler);
+  }
+}
+
+static void compileExprUnary(Compiler *compiler) {
+  // TODO
+
+  return compileTerm(compiler);
 }
 
 static void compileTerm(Compiler *compiler) {

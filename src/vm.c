@@ -66,6 +66,10 @@ int interpretInstruction(VM *vm, Chunk *chunk, int offset) {
     return interpretOpAdd(vm, chunk, offset);
   case OP_SUB:
     return interpretOpSub(vm, chunk, offset);
+  case OP_MUL:
+    return interpretOpMul(vm, chunk, offset);
+  case OP_DIV:
+    return interpretOpDiv(vm, chunk, offset);
 
   case OP_PRINT:
     return interpretOpPrint(vm, chunk, offset);

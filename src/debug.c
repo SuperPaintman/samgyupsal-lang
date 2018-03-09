@@ -51,6 +51,8 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
     CASE_SIMPLE_OPCODE(OP_ADD, offset);
     CASE_SIMPLE_OPCODE(OP_SUB, offset);
+    CASE_SIMPLE_OPCODE(OP_MUL, offset);
+    CASE_SIMPLE_OPCODE(OP_DIV, offset);
 
     CASE_SIMPLE_OPCODE(OP_PRINT, offset);
 
